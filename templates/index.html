@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>Calculadora Binária</title>
+</head>
+<body>
+    <h1>Calculadora Binária</h1>
+    <form method="post">
+        <label for="binary">Número Binário:</label>
+        <input type="text" id="binary" name="binary" required>
+        <button type="submit">Converter</button>
+    </form>
+
+    {% if result %}
+        {% if result.error %}
+            <p style="color: red;">{{ result.error }}</p>
+        {% else %}
+            <p>Decimal: {{ result.decimal }}</p>
+            <p>Octal: {{ result.octal }}</p>
+            <p>Hexadecimal: {{ result.hexadecimal }}</p>
+        {% endif %}
+    {% endif %}
+</body>
+</html>
