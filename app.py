@@ -1,23 +1,62 @@
-from flask import Flask, render_template, request
+from flask import Flask, request, render_template
+from funcoes_corretas import (
+    decimal_para_binario,
+    decimal_para_octal,
+    binario_para_decimal,
+    decimal_para_hexadecimal,
+    hexadecimal_para_decimal,
+    octal_para_decimal,
+    octal_para_hexadecimal,
+    hexadecimal_para_octal,
+    hexadecimal_para_binario
+)
 
 app = Flask(__name__)
 
-@app.route('/', methods=['GET', 'POST'])
-def index():
-    result = {}
-    if request.method == 'POST':
-        binary_input = request.form['binary']
+def configurar_rotas(app):
+    @app.route('/', methods=['GET', 'POST'])
+    def index() -> str:
+        numero = ""
+        tipo = ""
+        resultado = ""
 
-        try:
-            decimal = int(binary_input, 2)
-            result['decimal'] = decimal
-            result['octal'] = oct(decimal)[2:]
-            result['hexadecimal'] = hex(decimal)[2:].upper()
-        except ValueError:
-            result['error'] = 'Entrada inválida. Use apenas 0 e 1.'
+        if request.method == "POST":
+            numero = request.form.get("numero", "")
+            tipo = request.form.get("tipo", "")
 
-    return render_template('index.html', result=result)
+            try:
+                numero = numero.replace(',', '.')  # Ajuste de separador decimal universal
 
+                if tipo == "decimal_para_binario":
+                    resultado = decimal_para_binario(numero)
+                elif tipo == "decimal_para_hexadecimal":
+                    resultado = decimal_para_hexadecimal(numero)
+                elif tipo == "hexadecimal_para_decimal":
+                    resultado = hexadecimal_para_decimal(numero)
+                elif tipo == "octal_para_decimal":
+                    resultado = octal_para_decimal(numero)
+                elif tipo == "octal_para_hexadecimal":
+                    resultado = octal_para_hexadecimal(numero)
+                elif tipo == "hexadecimal_para_octal":
+                    resultado = hexadecimal_para_octal(numero)
+                elif tipo == "decimal_para_octal":
+                    resultado = decimal_para_octal(numero)
+                elif tipo == "hexadecimal_para_binario":
+                    resultado = hexadecimal_para_binario(numero)
+                elif tipo == "binario_para_decimal":
+                    resultado = binario_para_decimal(numero)
+                else:
+                    resultado = "Tipo de conversão inválido."
+            
+            except ValueError:
+                resultado = "Erro: Valor numérico inválido para a base selecionada."
+            except Exception as e:
+                resultado = f"Erro inesperado: {str(e)}"
+
+        return render_template('index.html', resultado=resultado, numero=numero, tipo=tipo)
+
+# Configura as rotas
+configurar_rotas(app)
 
 if __name__ == '__main__':
     app.run(debug=True)
